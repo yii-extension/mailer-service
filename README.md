@@ -9,6 +9,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/yii-extension/mailer-service)](https://packagist.org/packages/yii-extension/mailer-service)
 [![build](https://github.com/yii-extension/mailer-service/workflows/build/badge.svg)](https://github.com/yii-extension/mailer-service/actions)
 [![codecov](https://codecov.io/gh/yii-extension/mailer-service/branch/master/graph/badge.svg)](https://codecov.io/gh/yii-extension/mailer-service)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyii-extension%2Fmailer-service%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yii-extension/mailer-service/master)
 [![static analysis](https://github.com/yii-extension/mailer-service/workflows/static%20analysis/badge.svg)](https://github.com/yii-extension/mailer-service/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yii-extension/mailer-service/coverage.svg)](https://shepherd.dev/github/yii-extension/mailer-service)
 
