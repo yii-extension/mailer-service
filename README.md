@@ -12,11 +12,6 @@
 [![static analysis](https://github.com/yii-extension/mailer-service/workflows/static%20analysis/badge.svg)](https://github.com/yii-extension/mailer-service/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yii-extension/mailer-service/coverage.svg)](https://shepherd.dev/github/yii-extension/mailer-service)
 
-<p align="center">
-    <a href="https://github.com/yii-extension/mailer-service" target="_blank">
-        <img src="docs\images\home.png" >
-    </a>
-</p>
 
 ## Requirements
 
