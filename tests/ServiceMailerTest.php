@@ -5,24 +5,24 @@ declare(strict_types=1);
 namespace Yii\Extension\Service\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Nyholm\Psr7\Stream;
 use Nyholm\Psr7\UploadedFile;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use RuntimeException;
 use Swift_Plugins_LoggerPlugin;
 use Swift_SmtpTransport;
 use Swift_Transport;
-use Yii\Extension\Service\MailerService;
+use Yii\Extension\Service\ServiceMailer;
+use Yii\Extension\Service\Event\MessageNotSent;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Di\Container;
 use Yiisoft\EventDispatcher\Dispatcher\Dispatcher;
 use Yiisoft\EventDispatcher\Provider\Provider;
 use Yiisoft\Factory\Definitions\Reference;
 use Yiisoft\Files\FileHelper;
-use Yiisoft\Log\Logger as YiiLogger;
 use Yiisoft\Mailer\Composer;
 use Yiisoft\Mailer\FileMailer;
 use Yiisoft\Mailer\MailerInterface;
@@ -33,21 +33,21 @@ use Yiisoft\Mailer\SwiftMailer\Mailer;
 use Yiisoft\Mailer\SwiftMailer\Message;
 use Yiisoft\View\WebView;
 
-final class MailerServiceTest extends TestCase
+final class ServiceMailerTest extends TestCase
 {
     private Aliases $aliases;
     private ContainerInterface $container;
-    private MailerService $mailer;
+    private ServiceMailer $serviceMailer;
     private bool $writeToFiles = true;
 
-    public function testMailer(): void
+    public function testServiceMailer(): void
     {
         $this->container = new Container($this->config());
         $this->aliases = $this->container->get(Aliases::class);
-        $this->mailer = $this->container->get(MailerService::class);
+        $this->serviceMailer = $this->container->get(ServiceMailer::class);
 
         $this->assertTrue(
-            $this->mailer->run(
+            $this->serviceMailer->run(
                 'test@example.com',
                 'admin1@example.com',
                 'TestMe',
@@ -67,18 +67,18 @@ final class MailerServiceTest extends TestCase
 
         $this->removeDirectory('@runtime');
 
-        unset($this->aliases, $this->container, $this->mailer);
+        unset($this->aliases, $this->container, $this->serviceMailer);
     }
 
-    public function testMailerException(): void
+    public function testServiceMailerException(): void
     {
         $this->writeToFiles = false;
         $this->container = new Container($this->config());
         $this->aliases = $this->container->get(Aliases::class);
-        $this->mailer = $this->container->get(MailerService::class);
+        $this->serviceMailer = $this->container->get(ServiceMailer::class);
 
         $this->assertFalse(
-            $this->mailer->run(
+            $this->serviceMailer->run(
                 'test@example.com',
                 'admin1@example.com',
                 'TestMe',
@@ -98,7 +98,14 @@ final class MailerServiceTest extends TestCase
 
         $this->removeDirectory('@runtime');
 
-        unset($this->aliases, $this->container, $this->mailer);
+        unset($this->aliases, $this->container, $this->serviceMailer);
+    }
+
+    public function testEventMessageNotSend(): void
+    {
+        $event = new MessageNotSent('testMe');
+
+        $this->assertEquals('testMe', $event->getErrorMessage());
     }
 
     private function config(): array
@@ -121,7 +128,7 @@ final class MailerServiceTest extends TestCase
 
             ListenerProviderInterface::class => Provider::class,
 
-            LoggerInterface::class => YiiLogger::class,
+            LoggerInterface::class => NullLogger::class,
 
             WebView::class => [
                 '__class' => WebView::class,
@@ -183,8 +190,6 @@ final class MailerServiceTest extends TestCase
             ],
 
             MailerInterface::class => $this->writeToFiles ? FileMailer::class : Mailer::class,
-
-            MailerService::class => MailerService::class,
         ];
     }
 
