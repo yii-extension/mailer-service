@@ -16,6 +16,7 @@ use Swift_Plugins_LoggerPlugin;
 use Swift_SmtpTransport;
 use Swift_Transport;
 use Yii\Extension\Service\ServiceMailer;
+use Yii\Extension\Service\Event\MessageSent;
 use Yii\Extension\Service\Event\MessageNotSent;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Di\Container;
@@ -101,11 +102,24 @@ final class ServiceMailerTest extends TestCase
         unset($this->aliases, $this->container, $this->serviceMailer);
     }
 
+    public function testMessageSend(): void
+    {
+        $event = new MessageSent('success', 'header', 'body', true);
+
+        $this->assertEquals('success', $event->getType());
+        $this->assertEquals('header', $event->getHeader());
+        $this->assertEquals('body', $event->getBody());
+        $this->assertEquals(true, $event->getAddFlash());
+    }
+
     public function testEventMessageNotSend(): void
     {
-        $event = new MessageNotSent('testMe');
+        $event = new MessageNotSent('danger', 'header', 'body', true);
 
-        $this->assertEquals('testMe', $event->getErrorMessage());
+        $this->assertEquals('danger', $event->getType());
+        $this->assertEquals('header', $event->getHeader());
+        $this->assertEquals('body', $event->getBody());
+        $this->assertEquals(true, $event->getAddFlash());
     }
 
     private function config(): array

@@ -6,15 +6,36 @@ namespace Yii\Extension\Service\Event;
 
 final class MessageNotSent
 {
-    private string $errorMessage;
+    private string $type;
+    private string $header;
+    private string $body;
+    private bool $addFlash;
 
-    public function __construct(string $errorMessage)
+    public function __construct(string $type, string $header, string $body, bool $addFlash)
     {
-        $this->errorMessage = $errorMessage;
+        $this->type = $type;
+        $this->header = $header;
+        $this->body = $body;
+        $this->addFlash = $addFlash;
     }
 
-    public function getErrorMessage(): string
+    public function getType(): string
     {
-        return $this->errorMessage;
+        return $this->type;
+    }
+
+    public function getHeader(): string
+    {
+        return $this->header;
+    }
+
+    public function getBody(): string
+    {
+        return $this->body;
+    }
+
+    public function getAddFlash(): bool
+    {
+        return $this->addFlash;
     }
 }

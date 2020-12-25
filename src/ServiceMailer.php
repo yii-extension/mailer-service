@@ -22,6 +22,11 @@ final class ServiceMailer
     private EventDispatcherInterface $dispatch;
     private LoggerInterface $logger;
     private MailerInterface $mailer;
+    private bool $addFlash = true;
+    private string $typeFlashMessageSent = 'success';
+    private string $typeFlashMessageNotSent = 'danger';
+    private string $headerFlashMessage = 'System mailer notification.';
+    private string $bodyFlashMessage = 'Your message has been sent.';
 
     public function __construct(
         Aliases $aliases,
@@ -72,19 +77,63 @@ final class ServiceMailer
         return $this->send($message);
     }
 
+    public function addFlash(bool $value): self
+    {
+        $this->addFlash = $value;
+
+        return $this;
+    }
+    public function typeFlashMessageSent(string $value): self
+    {
+        $this->typeFlashMessageSent = $value;
+
+        return $this;
+    }
+
+    public function typeFlashMessageNotSent(string $value): self
+    {
+        $this->typeFlashMessageNotSent = $value;
+
+        return $this;
+    }
+
+    public function headerFlashMessage(string $value): self
+    {
+        $this->headerFlashMessage = $value;
+
+        return $this;
+    }
+
+    public function bodyFlashMessage(string $value): self
+    {
+        $this->bodyFlashMessage = $value;
+
+        return $this;
+    }
+
     private function send(MessageInterface $message): bool
     {
         $result = false;
 
         try {
             $this->mailer->send($message);
-            $event = new MessageSent();
+            $event = new MessageSent(
+                $this->typeFlashMessageSent,
+                $this->headerFlashMessage,
+                $this->bodyFlashMessage,
+                $this->addFlash
+            );
             $this->dispatch->dispatch($event);
             $result = true;
         } catch (Exception $e) {
             $message = $e->getMessage();
             $this->logger->error($message);
-            $event = new MessageNotSent($message);
+            $event = new MessageNotSent(
+                $this->typeFlashMessageNotSent,
+                $this->headerFlashMessage,
+                $message,
+                $this->addFlash
+            );
             $this->dispatch->dispatch($event);
         }
 
